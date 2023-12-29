@@ -3,7 +3,7 @@ library trigram_index;
 class TrigramIndex {
   TrigramIndex();
 
-  /// the actual index, maps each trigram (three letter sequence) to a list of unique identifiers which are either strings or ints
+  /// the actual index, maps each trigram (three letter sequence) to a list of indexes
   Map<String, List> index = {};
 
   /// the original strings used
@@ -38,12 +38,30 @@ class TrigramIndex {
     }
   }
 
+  /// to json
+  Map toJson() {
+    return {
+      'i': index,
+      't': trigramOriginalStrings,
+    };
+  }
+
   /// builds [index] from a list of strings
   factory TrigramIndex.buildIndex(List<String> strings) {
     TrigramIndex trigramIndex = TrigramIndex();
     for (String string in strings) {
       trigramIndex.addStringToIndex(string);
     }
+
+    return trigramIndex;
+  }
+
+  /// from json
+  factory TrigramIndex.fromJson(Map json) {
+    TrigramIndex trigramIndex = TrigramIndex();
+
+    trigramIndex.index = Map<String, List>.from(json['i']);
+    trigramIndex.trigramOriginalStrings = List<String>.from(json['t']);
 
     return trigramIndex;
   }
