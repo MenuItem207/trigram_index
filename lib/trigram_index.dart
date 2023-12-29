@@ -9,7 +9,7 @@ class TrigramIndex {
   /// the original strings used
   List<String> trigramOriginalStrings = [];
 
-  /// runs a search
+  /// runs a search, returns a list of original strings ordered by their most relevance (desc)
   List<String> search(String search) {
     List<String> searchTrigrams = generateTrigramListFrom(search);
     List ids = [];
@@ -17,9 +17,25 @@ class TrigramIndex {
       ids.addAll(index[trigram] ?? []);
     }
 
-    ids = ids.toSet().toList();
+    // maps an id to its count
+    Map<int, int> idCount = {};
+    for (int id in ids) {
+      if (idCount.containsKey(id)) {
+        idCount[id] = idCount[id]! + 1;
+      } else {
+        idCount[id] = 1;
+      }
+    }
 
-    return ids.map((index) => trigramOriginalStrings[index]).toList();
+    List<MapEntry> sortedIDEntries = idCount.entries
+        // Sort entries in descending order based on their count
+        .toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // Extract only the IDs from the sorted entries
+    return sortedIDEntries
+        .map((entry) => trigramOriginalStrings[entry.key])
+        .toList();
   }
 
   /// adds a relevant string's trigrams to the [index]
